@@ -1,0 +1,25 @@
+FROM ubuntu:impish
+
+# TODO --- add an environment variable declaration for a default DB_PASSWORD  
+# of "mydefaultpassword"
+# https://docs.docker.com/engine/reference/builder/#env
+
+ENV DB_PASSWORD=mydefaultpassword
+
+COPY ./code /opt/gowebapp
+
+# TODO --- remove the following line. We no longer want to include the configuration 
+# file in the image.
+# COPY ./config /opt/gowebapp/config
+
+# TODO --- add a volume declaration for the container configuration path we want to 
+# mount at runtime from the host file system: /opt/gowebapp/config
+# https://docs.docker.com/engine/reference/builder/#volume
+
+VOLUME /opt/gowebapp/config
+
+EXPOSE 8080
+USER 1000
+
+WORKDIR /opt/gowebapp/
+ENTRYPOINT ["/opt/gowebapp/gowebapp"]

@@ -1,0 +1,1 @@
+# Kubernetes academy labs solutiions

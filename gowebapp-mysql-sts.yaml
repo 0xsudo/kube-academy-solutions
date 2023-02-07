@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata: 
+  name: gowebapp-mysql
+  labels:
+    app: gowebapp-mysql
+    tier: backend
+spec:
+  serviceName: gowebapp-mysql
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gowebapp-mysql
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: gowebapp-mysql
+        tier: backend
+    spec:
+      containers:
+      - name: gowebapp-mysql
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              #TODO: Set secret name to 'mysql'
+              #TODO: Set key to 'password'
+              #As Created from the secret command
+              name: mysql
+              key: password
+        image: gowebapp-mysql:v1
+        ports:
+        - containerPort: 3306
+        livenessProbe:
+          tcpSocket:
+            port: 3306
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          timeoutSeconds: 1
+        readinessProbe:
+          exec:
+            #TODO: replace "mypassword" in command line below to be ${MYSQL_ROOT_PASSWORD} and
+            #      also update the line to this new format. Unfortunately we need to move to
+            #      a different format due to https://github.com/kubernetes/kubernetes/issues/40846
+            command: ["bash", "-c", "mysql -uroot -p${MYSQL_ROOT_PASSWORD} -e 'use gowebapp; select count(*) from user'"]
+          initialDelaySeconds: 25
+          periodSeconds: 10
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: mysql-pv
+          mountPath: /var/lib/mysql
+  volumeClaimTemplates:
+  - metadata:
+      name: mysql-pv
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 5Gi
+          
+          
+# The following overrides default passowrd in connf file and docker image
+# kubectl create secret generic mysql --from-literal=password=mypassword
+# kubectl describe secret mysql

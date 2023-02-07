@@ -1,0 +1,41 @@
+### setting onaother context
+### kubectl config set-context my-context --user eduk8s --cluster in-cluster-config --namespace ${SESSION_NAMESPACE}-my-namespace
+
+### example output for kubectl config view
+#apiVersion: v1
+#clusters:
+#- cluster:
+#    certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+#    server: https://10.96.0.1:443
+#  name: in-cluster-config
+#contexts:
+#- context:
+#    cluster: in-cluster-config
+#    namespace: eduk8s-labs-w17-s065
+#    user: eduk8s
+#  name: eduk8s
+#current-context: eduk8s
+#kind: Config
+#preferences: {}
+#users:
+#- name: eduk8s
+#  user:
+#    token: REDACTED
+
+#7.2: List each namespace name by itself newline separated.
+
+#kubectl get namespaces -o jsonpath='{range.items[*]}{.metadata.name}{"\n"}{end}'
+#Ref https://kubernetes.io/docs/reference/kubectl/jsonpath/ 
+
+#7.3: Forward the nginx port from one of the pods onto localhost:8000 of your client machine
+
+#kubectl port-forward <pod_id> 8000:8080
+
+#7.4: Start a tail with follow of the logs on the same pod used above
+
+#kubectl logs -f <pod_id>
+
+#7.5: Run a remote command inside the container to for example get the current date and time
+
+#kubectl exec <pod_id> -- date
+

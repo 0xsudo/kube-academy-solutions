@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: 
+  name: gowebapp
+  labels:
+    app: gowebapp
+    tier: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: gowebapp
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: gowebapp
+        tier: frontend
+    spec:
+      containers:
+      - name: gowebapp
+        env:
+        - name: DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              #TODO: Set secret name to 'mysql'
+              #TODO: Set key name to 'password'
+              #As Created from the secret command
+              name: mysql
+              key: password
+        # TODO: change image to v2
+        image: gowebapp:v2       
+        ports:
+        - containerPort: 8080
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          periodSeconds: 5
+          timeoutSeconds: 1
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          periodSeconds: 5
+          timeoutSeconds: 1
+        volumeMounts:
+        - #TODO: Set volume name to 'config-volume'
+          #TODO: Set mountPath to '/opt/gowebapp/config'
+          name: config-volume
+          mountPath: /opt/gowebapp/config
+      volumes:
+      - #TODO: define volume name: config-volume
+        name: config-volume
+        configMap:
+          #TODO: Set ConfigMap name to 'gowebapp'
+          name: gowebapp
+          items:
+          - key: webapp-config-json
+            path: config.json
+            
+            
+# this creates a configmap
+# kubectl create configmap gowebapp --from-file=webapp-config-json=$HOME/gowebapp/gowebapp/config/config.json
+# kubectl describe configmap gowebapp
