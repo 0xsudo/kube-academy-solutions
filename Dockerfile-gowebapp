@@ -4,7 +4,7 @@ FROM ubuntu:impish
 # of "mydefaultpassword"
 # https://docs.docker.com/engine/reference/builder/#env
 
-ENV DB_PASSWORD=mydefaultpassword
+ENV DB_PASSWORD=mpassword
 
 COPY ./code /opt/gowebapp
 
