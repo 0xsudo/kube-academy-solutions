@@ -1,1 +1,1 @@
-# Kubernetes academy labs solutiions
+# Kubernetes academy labs solutiions, for successive labs
